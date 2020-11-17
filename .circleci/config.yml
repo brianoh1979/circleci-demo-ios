@@ -40,10 +40,49 @@ commands:
           keys:
             - v1-lfs-macos-{{ checksum "~/repo/.assets-id" }}
 
+  save-cache-yarn-macos:
+    description: 'Save Yarn Cache for MacOS'
+    steps:
+      - save_cache:
+          name: Saving Yarn Cache for MacOS
+          key: v3-yarn-macos-{{ checksum "~/repo/react-native/yarn.lock" }}
+          paths:
+            - ~/repo/react-native/node_modules
+
+  restore-cache-yarn-macos:
+    description: 'Restore Yarn Cache for MacOS'
+    steps:
+      - restore_cache:
+          name: Restoring yarn Cache for MacOS
+          keys:
+            # Find a cache corresponding to this specific yarn.lock checksum.
+            - v3-yarn-macos-{{ checksum "~/repo/react-native/yarn.lock" }}
+
+  save-cache-pod:
+    description: 'Save Pod Cache'
+    steps:
+      - save_cache:
+          name: Saving Pod Cache
+          key: v3-pod-{{ checksum "Podfile.lock" }}
+          paths:
+            - ./Pods
+
+  restore-cache-pod:
+    description: 'Restore Pod Cache'
+    steps:
+      - restore_cache:
+          name: Restoring Pod Cache
+          keys:
+            # Find a cache corresponding to this specific Podfile.lock checksum.
+            - v3-pod-{{ checksum "Podfile.lock" }}
+            # Find the most recent cache regardless of Podfile.lock checksum.
+            - v3-pod-
+
 #  prepare-jfrog-aritfactory-credential:
 #    description: 'Setup JFrog Aritfactory Credential'
 #    steps:
 #      - run: echo "[lfs]\n\turl = \"https://$ARTIFACTORY_USER:$ARTIFACTORY_USER_PASSWORD@dragonproject.jfrog.io/artifactory/api/lfs/dragon-frontend\"" > .lfsconfig
+
   checkout-source-code-macos:
     description: 'Checkout and pull git lfs files'
     parameters:
