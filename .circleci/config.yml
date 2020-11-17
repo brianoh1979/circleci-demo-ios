@@ -15,10 +15,48 @@ executors:
 
 commands:
 
+  save-cache-lfs-macos:
+    description: 'Save Git LFS files cache'
+    steps:
+      - prepare-git-lfs
+      - save_cache:
+          name: Saving Git LFS files cache
+          key: v1-lfs-macos-{{ checksum "~/repo/.assets-id" }}
+          paths:
+            - ~/repo/.git/lfs
+
+  restore-cache-lfs-macos:
+    description: 'Restore Git LFS files cache'
+    steps:
+      - prepare-git-lfs
+      - restore_cache:
+          name: Restore Git LFS files cache
+          keys:
+            - v1-lfs-macos-{{ checksum "~/repo/.assets-id" }}
+
+#  prepare-jfrog-aritfactory-credential:
+#    description: 'Setup JFrog Aritfactory Credential'
+#    steps:
+#      - run: echo "[lfs]\n\turl = \"https://$ARTIFACTORY_USER:$ARTIFACTORY_USER_PASSWORD@dragonproject.jfrog.io/artifactory/api/lfs/dragon-frontend\"" > .lfsconfig
+  checkout-source-code-macos:
+    description: 'Checkout and pull git lfs files'
+    parameters:
+      path:
+        type: string
+        default: '.'
+
+    steps:
+      - checkout:
+          path: << parameters.path >>
+#      - prepare-jfrog-aritfactory-credential
+      - restore-cache-lfs-macos
+      - run: git lfs pull
+      - save-cache-lfs-macos
+
   ios-prepare-env:
     steps:
       - checkout-source-code-macos:
-          path: ~/Game
+          path: ~/repo
       - run:
           name: Creating workspace for storing artifact
           command: mkdir -p ios_workspace/builds/$CIRCLE_BUILD_NUM
