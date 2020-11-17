@@ -133,21 +133,21 @@ commands:
             echo 'export PATH=/usr/local/opt/node/bin:$PATH' >> $BASH_ENV
             export PATH="$HOME/.npm-packages/bin:$PATH"
             echo $PATH
-      - restore-cache-yarn-macos
+#      - restore-cache-yarn-macos
       - run:
           name: yarn install
           command: yarn install --cwd ~/repo/react-native --frozen-lockfile
-      - save-cache-yarn-macos
+#      - save-cache-yarn-macos
       - run:
           name: Pod version
           command: |
             chruby ruby-2.6
             sudo gem install cocoapods -v 1.9.1 ; pod --version
-      - restore-cache-pod
-      - run:
-          name: Pod Install
-          command: pod install
-      - save-cache-pod
+#      - restore-cache-pod
+#      - run:
+#          name: Pod Install
+#          command: pod install
+#      - save-cache-pod
 
   ios-build:
     parameters:
