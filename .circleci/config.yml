@@ -2,6 +2,7 @@
 version: 2
 jobs:
   build-and-test:
+    resource_class: large
     macos:
       xcode: "10.2.0"
     working_directory: /Users/distiller/project
