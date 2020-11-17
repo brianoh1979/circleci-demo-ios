@@ -10,8 +10,12 @@ executors:
       xcode: '11.5.0'
     working_directory: ~/repo/react-native/ios
     environment:
-      - BASH_ENV: /Users/distiller/.bashrc
-      - GIT_LFS_SKIP_SMUDGE: 1
+      FL_OUTPUT_DIR: output
+      FASTLANE_LANE: test
+    shell: /bin/bash --login -o pipefail
+#    environment:
+#      - BASH_ENV: /Users/distiller/.bashrc
+#      - GIT_LFS_SKIP_SMUDGE: 1
 
 commands:
   prepare-git-lfs:
