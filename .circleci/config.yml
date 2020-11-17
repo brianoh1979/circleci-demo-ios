@@ -100,6 +100,9 @@ commands:
 
   ios-prepare-env:
     steps:
+      - run:
+          name: Set Ruby Version
+          command: echo 'chruby ruby-2.6' >> ~/.bash_profile
       - checkout-source-code-macos:
           path: ~/repo
       - run:
@@ -171,7 +174,7 @@ commands:
       - run:
           name: Match provisionig profile & Build the iOS code
           command: |
-            chruby ruby-2.6
+ #           chruby ruby-2.6
             bundle exec fastlane match_profile READONLY:true --env << parameters.env >>
             bundle exec fastlane generate_ios_app BUILD_NUMBER:$CIRCLE_BUILD_NUM --env << parameters.env >>
  #     - run:
