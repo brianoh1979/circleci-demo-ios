@@ -111,9 +111,9 @@ commands:
             chruby ruby-2.6
             gem install bundler:2.0.2
             bundle install
-      - run:
-          name: Set Ruby Version
-          command: echo 'chruby ruby-2.6' >> ~/.bash_profile
+  #    - run:
+  #        name: Set Ruby Version
+  #        command: echo 'chruby ruby-2.6' >> ~/.bash_profile
       - run:
           name: remove node
           command: brew uninstall --ignore-dependencies node
@@ -164,15 +164,15 @@ commands:
         type: string
         default: 'dev'
     steps:
-      - run:
-          name: Reset simulators
-          command: |
-            export LC_ALL=en_US.UTF-8
-            export LANG=en_US.UTF-8
-            fastlane snapshot reset_simulators --force
+ #     - run:
+ #         name: Reset simulators
+ #         command: |
+ #           export LC_ALL=en_US.UTF-8
+ #           export LANG=en_US.UTF-8
+ #           fastlane snapshot reset_simulators --force
       - run: bundle update fastlane     
       - run:
-          name: Match provisionig profile & Build the iOS code
+          name: Match provisioning profile & Build the iOS code
           command: |
             bundle exec fastlane test
  #     - run:
