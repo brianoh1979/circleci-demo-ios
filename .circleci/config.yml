@@ -1,6 +1,113 @@
 #Comment to trigger fresh commit
 version: 2
+orbs:
+  artifactory: circleci/artifactory@1.0.0
+
+executors:
+  
+  ios-executor:
+    macos:
+      xcode: '11.5.0'
+    working_directory: ~/repo/react-native/ios
+    environment:
+      - BASH_ENV: /Users/distiller/.bashrc
+      - GIT_LFS_SKIP_SMUDGE: 1
+
+commands:
+
+  ios-prepare-env:
+    steps:
+      - checkout-source-code-macos:
+          path: ~/Game
+      - run:
+          name: Creating workspace for storing artifact
+          command: mkdir -p ios_workspace/builds/$CIRCLE_BUILD_NUM
+      - run:
+          name: installing gems bundle install
+          command: |
+            chruby ruby-2.6
+            gem install bundler:2.0.2
+            bundle install
+      - run:
+          name: remove node
+          command: brew uninstall --ignore-dependencies node
+      - run:
+          name: install node
+          command: |
+            HOMEBREW_NO_AUTO_UPDATE=1 brew install node@12
+      - run:
+          name: SET Node.js path
+          command: |
+            echo 'export PATH="/usr/local/opt/node@12/bin:$PATH"' >> ~/.bash_profile
+      - run:
+          name: Install Yarn
+          command: |
+            echo --install.modules-folder "~/.npm-packages" >> ~/.yarnrc
+            curl -o- -L https://yarnpkg.com/install.sh | bash
+      - run:
+          name: Set Yarn PATH
+          command: |
+            echo 'export PATH=/usr/local/opt/node/bin:$PATH' >> $BASH_ENV
+            export PATH="$HOME/.npm-packages/bin:$PATH"
+            echo $PATH
+      - restore-cache-yarn-macos
+      - run:
+          name: yarn install
+          command: yarn install --cwd ~/repo/react-native --frozen-lockfile
+      - save-cache-yarn-macos
+      - run:
+          name: Pod version
+          command: |
+            chruby ruby-2.6
+            sudo gem install cocoapods -v 1.9.1 ; pod --version
+      - restore-cache-pod
+      - run:
+          name: Pod Install
+          command: pod install
+      - save-cache-pod
+
+  ios-build:
+    parameters:
+      env:
+        type: string
+        default: 'dev'
+    steps:
+      - run:
+          name: Match provisionig profile & Build the iOS code
+          command: |
+            chruby ruby-2.6
+            bundle exec fastlane match_profile READONLY:true --env << parameters.env >>
+            bundle exec fastlane generate_ios_app BUILD_NUMBER:$CIRCLE_BUILD_NUM --env << parameters.env >>
+ #     - run:
+ #         name: Run Snyk test to check for vulnerabilities and license issues
+ #         command: |
+ #           if [[ ! -x "/usr/local/bin/snyk" ]]; then
+ #             echo https://github.com/snyk/snyk/releases/latest/download/snyk-macos{,.sha256} | xargs -n1 curl -sLO
+ #             sudo mv snyk-macos /usr/local/bin/snyk
+ #             sudo chmod +x /usr/local/bin/snyk
+ #           fi
+ #           snyk config set disableSuggestions=true
+ #           snyk test --severity-threshold=high --file=Podfile.lock --org=frontend-chapter
+ #           if [[ "${CIRCLE_BRANCH}" = "master" ]]; then snyk monitor --prune-repeated-subdependencies --file=Podfile.lock --org=frontend-chapter --remote-repo-url=$CIRCLE_REPOSITORY_URL --project-name=${CIRCLE_PROJECT_REPONAME}/$(pwd | sed -e "s#$(git rev-parse --show-toplevel)/##g"); fi
+      - run:
+          name: copy app to workspace
+          command: cp ../dist/app.ipa ios_workspace/builds/$CIRCLE_BUILD_NUM/
+      - persist_to_workspace:
+          root: ios_workspace
+          paths:
+            - builds
+      - store_artifacts:
+          path: ios_workspace/builds
+
 jobs:
+
+  ios-build-dev:
+    executor: ios-executor
+    steps:
+      - ios-prepare-env
+      - ios-build:
+          env: 'dev'
+
   build-and-test:
     macos:
       xcode: "10.2.0"
@@ -58,13 +165,14 @@ workflows:
   version: 2
   build-test-adhoc:
     jobs:
-      - build-and-test
-      - adhoc:
-          filters:
-            branches:
-              only: development
-          requires:
-            - build-and-test
+      - ios-build-dev
+ #     - build-and-test
+ #     - adhoc:
+ #         filters:
+ #           branches:
+ #             only: development
+ #         requires:
+ #           - build-and-test
       #- beta:
           #filters:
             #branches:
