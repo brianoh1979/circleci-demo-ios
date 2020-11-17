@@ -14,6 +14,12 @@ executors:
       - GIT_LFS_SKIP_SMUDGE: 1
 
 commands:
+  prepare-git-lfs:
+    description: 'Generating Git LFS file list'
+    steps:
+      - run:
+          name: Generating Git LFS file list
+          command: git lfs ls-files -l | cut -d' ' -f1 | sort > ~/repo/.assets-id
 
   save-cache-lfs-macos:
     description: 'Save Git LFS files cache'
