@@ -174,8 +174,7 @@ commands:
       - run:
           name: Match provisionig profile & Build the iOS code
           command: |
-            bundle exec fastlane match_profile READONLY:true --env << parameters.env >>
-            bundle exec fastlane generate_ios_app BUILD_NUMBER:$CIRCLE_BUILD_NUM --env << parameters.env >>
+            bundle exec fastlane test
  #     - run:
  #         name: Run Snyk test to check for vulnerabilities and license issues
  #         command: |
