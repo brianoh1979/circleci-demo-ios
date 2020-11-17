@@ -100,11 +100,8 @@ commands:
 
   ios-prepare-env:
     steps:
-      - run:
-          name: Set Ruby Version
-          command: echo 'chruby ruby-2.6' >> ~/.bash_profile
-#      - checkout-source-code-macos:
-#          path: ~/repo
+      - checkout-source-code-macos:
+          path: ~/repo
       - run:
           name: Creating workspace for storing artifact
           command: mkdir -p ios_workspace/builds/$CIRCLE_BUILD_NUM
@@ -114,6 +111,9 @@ commands:
             chruby ruby-2.6
             gem install bundler:2.0.2
             bundle install
+      - run:
+          name: Set Ruby Version
+          command: echo 'chruby ruby-2.6' >> ~/.bash_profile
       - run:
           name: remove node
           command: brew uninstall --ignore-dependencies node
