@@ -17,7 +17,7 @@ jobs:
           command:  echo "ruby-2.6" > ~/.ruby-version
       - run: bundle install
 #      - run: bundle update fastlane
-#      - run: bundle exec fastlane snapshot update
+      - run: bundle exec fastlane snapshot update
       - run:
           name: Fastlane
           command: bundle exec fastlane $FASTLANE_LANE
