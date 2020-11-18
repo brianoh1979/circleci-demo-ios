@@ -4,7 +4,7 @@ jobs:
   build-and-test:
     resource_class: large
     macos:
-      xcode: "11.5.0"
+      xcode: "10.2.0"
     working_directory: /Users/distiller/project
     environment:
       FL_OUTPUT_DIR: output
@@ -12,14 +12,10 @@ jobs:
     shell: /bin/bash --login -o pipefail
     steps:
       - checkout
-      - run: sudo gem install bundler
       - run: bundle install
-      - run: bundle update fastlane
       - run:
           name: Fastlane
-          command: |
-            bundle exec fastlane snapshot update 
-            bundle exec fastlane $FASTLANE_LANE
+          command: bundle exec fastlane $FASTLANE_LANE
       - store_artifacts:
           path: output
       - store_test_results:
@@ -63,13 +59,13 @@ workflows:
   version: 2
   build-test-adhoc:
     jobs:
-      - build-and-test
+#      - build-and-test
       - adhoc:
           filters:
             branches:
-              only: development
-          requires:
-            - build-and-test
+              only: master
+#          requires:
+#            - build-and-test
       #- beta:
           #filters:
             #branches:
