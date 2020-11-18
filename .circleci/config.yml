@@ -13,6 +13,7 @@ jobs:
     steps:
       - checkout
       - run: bundle install
+      - run: bundle update fastlane
       - run: bundle exec fastlane snapshot update
       - run:
           name: Fastlane
