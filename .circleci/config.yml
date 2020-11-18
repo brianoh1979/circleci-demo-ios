@@ -12,7 +12,7 @@ jobs:
     shell: /bin/bash --login -o pipefail
     steps:
       - checkout
-      - run: gem install bundler
+      - run: sudo gem install bundler
       - run: bundle install
       - run: bundle update fastlane
       - run:
