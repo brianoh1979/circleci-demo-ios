@@ -1,4 +1,4 @@
 # Gemfile
 source "https://rubygems.org"
-gem 'fastlane', " ~> 2.107.0"
+gem 'fastlane', " ~> 2.167.0"
 
